@@ -9,6 +9,20 @@
 
     <ui:define name="content">
         <h:form>
+            <h:outputLabel for="username" value="Usuario:" />
+            <p:inputText id="username" value="#{primerBean.username}" required="true" label="username" />
+            <br>
+                
+            </br>
+            <h:outputLabel for="password" value="Contraseña:" />
+            <p:password id="password" value="#{primerBean.password}" required="true" label="password" />
+              <br>
+                
+            </br>
+                <p:commandButton value="Login"  action="#{primerBean.login}"/>
+                 <br>
+                
+            </br>
             <p:panelGrid class="ui-noborder">
                 <p:outputLabel value="Ingrese su nombre"></p:outputLabel>
                 <p:inputText value="#{primerBean.name}">
