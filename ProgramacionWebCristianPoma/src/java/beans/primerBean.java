@@ -17,6 +17,8 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import javax.servlet.http.HttpSession;
+import modelo.Usuario;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 
@@ -61,8 +63,9 @@ public class primerBean implements Serializable {
     private Date maxTime;
     private Date minDateTime;
     private Date maxDateTime;
-    private String username;     
+    private String username;
     private String password;
+    private List<Usuario> listaU;
 
     @PostConstruct
     public void init() {
@@ -102,6 +105,7 @@ public class primerBean implements Serializable {
         dateDe = GregorianCalendar.getInstance().getTime();
         dateTimeDe = GregorianCalendar.getInstance().getTime();
     }
+
     public String getUsername() {
         return username;
     }
@@ -117,25 +121,35 @@ public class primerBean implements Serializable {
     public void setPassword(String password) {
         this.password = password;
     }
-    public void login() {
+
+    public String login() {
+        String url = "";
         FacesMessage message = null;
         boolean loggedIn = false;
-         
-        if(username != null && username.equals("admin") && password != null && password.equals("admin")) {
-            loggedIn = true;
-            message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Bienvenido mijin ", username);
-        } else {
-            loggedIn = false;
-            message = new FacesMessage(FacesMessage.SEVERITY_WARN, "Loggin Error", "Datos incorrectos");
+        for (Usuario user : listaU) {
+            if (username != null && username.equals(user.getUsuario()) && password != null && password.equals(user.getContrasenia())) {
+                HttpSession sesion=(HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(true); 
+                sesion.setAttribute("usuario", user);
+                if (user.getRol().equals("Administrativo")) {
+                    url = "pagAdministrador.xhtml?faces-redirect=true";
+                } else {
+                    if (user.getRol().equals("Estudiante")) {
+                        url = "pagEstudiante.xhtml?faces-redirect=true";
+                    } else {
+                        if (user.getRol().equals("Docente")) {
+                            url = "pagDocente.xhtml?faces-redirect=true";
+                        }
+                    }
+                }
+            } else {
+                loggedIn = false;
+                message = new FacesMessage(FacesMessage.SEVERITY_WARN, "Loggin Error", "Datos incorrectos");
+                FacesContext.getCurrentInstance().addMessage(null, message);
+                PrimeFaces.current().ajax().addCallbackParam("loggedIn", loggedIn);
+            }
         }
-         
-        FacesContext.getCurrentInstance().addMessage(null, message);
-        PrimeFaces.current().ajax().addCallbackParam("loggedIn", loggedIn);
-    }
 
-    public void click() {
-        PrimeFaces.current().ajax().update("form:display");
-        PrimeFaces.current().executeScript("PF('dlg').show()");
+        return url;
     }
 
     public Date getDate1() {
@@ -379,6 +393,15 @@ public class primerBean implements Serializable {
     }
 
     public primerBean() {
+        listaU = new ArrayList<>();
+        listaU.add(new Usuario("Cristian", "black", "1234", "Estudiante"));
+        listaU.add(new Usuario("Cesar", "chess", "1234", "Administrativo"));
+        listaU.add(new Usuario("Steven", "chimbomba", "1234", "Docente"));
+        listaU.add(new Usuario("Dario", "donmari", "1234", "Estudiante"));
+        listaU.add(new Usuario("Steve", "churon", "1234", "Docente"));
+        listaU.add(new Usuario("Joan", "peña", "1234", "Estudiante"));
+        listaU.add(new Usuario("Alexis", "ortega", "1234", "Estudiante"));
+        listaU.add(new Usuario("Jefferson", "ing", "1234", "Docente"));
     }
 
 }
