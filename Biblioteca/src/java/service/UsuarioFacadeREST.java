@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -41,6 +42,40 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
     public void create(Usuario entity) {
         super.create(entity);
     }
+    
+    @POST 
+    @Path("crear")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON})
+    public String CrearUser(@FormParam ("id_usuario") Integer idU, @FormParam ("cedula") String Ced, @FormParam ("nombre") String Nom, @FormParam ("apellido") String Apell, @FormParam ("direccion") String Dire, @FormParam ("telefono") String Tel, @FormParam ("correo") String Corr, @FormParam ("tipo") Integer Tip){
+        Usuario user= new Usuario();
+        user.setIdUsuario(idU); 
+        user.setCedula(Ced);
+        user.setNombre(Nom);
+        user.setApellido(Apell);
+        user.setDireccion(Dire);
+        user.setTelefono(Tel);
+        user.setCorreo(Corr);
+        user.setTipo(Tip);        
+        super.create(user);
+        return "Usuario Creado";
+    }
+    
+    @POST 
+    @Path("editar")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON}) 
+    public String EditarUser(@FormParam("id_usuario") Integer idU, @FormParam ("cedula") String Ced, @FormParam ("nombre") String Nom, @FormParam ("apellido") String Apell, @FormParam ("direccion") String Dire, @FormParam ("telefono") String Tel, @FormParam ("correo") String Corr, @FormParam ("tipo") Integer Tip){
+        Usuario user;
+        user=super.find(idU);
+        user.setCedula(Ced);
+        user.setNombre(Nom);
+        user.setApellido(Apell);
+        user.setDireccion(Dire);
+        user.setTelefono(Tel);
+        user.setCorreo(Corr);
+        user.setTipo(Tip); 
+        super.edit(user);
+        return "Usuario Editado";
+    }
 
     @PUT
     @Path("{id}")
@@ -60,6 +95,13 @@ public class UsuarioFacadeREST extends AbstractFacade<Usuario> {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Usuario find(@PathParam("id") Integer id) {
         return super.find(id);
+    }
+    
+    @POST
+    @Path("obtenerUsuario")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON})
+    public Usuario Obtener(@FormParam("idUser") Integer idU){
+        return super.find(idU);
     }
 
     @GET
